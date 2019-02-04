@@ -1,0 +1,138 @@
+<style lang="less" scoped>
+@import '~@/assets/styles/variables';
+
+.container {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  width: 100%;
+  .main {
+    display: flex;
+    position: absolute;
+    top: 60px;
+    bottom: 0px;
+    overflow: hidden;
+    aside {
+      flex: 0 0 230px;
+      width: 230px;
+      .el-menu {
+        height: 100%;
+      }
+      .collapsed {
+        width: 60px;
+        .item {
+          position: relative;
+        }
+        .submenu {
+          position: absolute;
+          top: 0px;
+          left: 60px;
+          z-index: 999;
+          height: auto;
+          display: none;
+        }
+      }
+    }
+    .menu-collapsed {
+    }
+    .menu-expanded {
+      flex: 0 0 230px;
+      width: 230px;
+    }
+    .content-main {
+      flex: 1;
+      overflow-y: scroll;
+      padding: 20px;
+      .breadcrumb-container {
+        .title {
+          width: 200px;
+          float: left;
+          color: #475669;
+        }
+        .breadcrumb-inner {
+          float: right;
+        }
+      }
+      .content-wrapper {
+        background-color: #fff;
+        box-sizing: border-box;
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <el-row class="container">
+    <el-col
+      :span="24"
+      class="main"
+    >
+      <aside class="menu-expanded">
+        <el-menu
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          unique-opened
+          router
+        >
+          <template v-for="(item, index) in $router.options.routes">
+            <el-submenu
+              :key="index"
+              :index="index+''"
+              v-if="!item.leaf"
+            >
+              <template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
+              <el-menu-item
+                v-for="child in item.children"
+                :index="child.path"
+                :key="child.path"
+                v-if="!child.hidden"
+              >{{child.name}}</el-menu-item>
+            </el-submenu>
+            <el-menu-item
+              v-if="item.leaf&&item.children.length>0"
+              :index="item.children[0].path"
+              :key="item.children[0].path"
+            ><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
+          </template>
+        </el-menu>
+      </aside>
+      <section class="content-main">
+        <div class="grid-content bg-purple-light">
+          <el-col
+            :span="24"
+            class="breadcrumb-container"
+          >
+            <strong class="title">{{$route.name}}</strong>
+            <el-breadcrumb
+              separator="/"
+              class="breadcrumb-inner"
+            >
+              <el-breadcrumb-item
+                v-for="item in $route.matched"
+                :key="item.path"
+              >
+                {{ item.name }}
+              </el-breadcrumb-item>
+            </el-breadcrumb>
+          </el-col>
+          <el-col
+            :span="24"
+            class="content-wrapper"
+          >
+            <transition
+              name="fade"
+              mode="out-in"
+            >
+              <router-view></router-view>
+            </transition>
+          </el-col>
+        </div>
+      </section>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+export default {}
+</script>
